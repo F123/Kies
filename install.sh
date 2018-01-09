@@ -98,7 +98,7 @@ README");do
 cp "$i" $destdir$bindir||echo "failed to copy $i"
 done
 #if (test ! -d $destdir/bin)
-  then mkdir -p $destdir/bin&&ok=0||echo creation of $destdirbindir failed
+#  then mkdir -p $destdir/bin&&ok=0||echo creation of $destdirbindir failed
 #  test $ok -eq 1&&exit 1
 #fi
 echo "installing the man page"
