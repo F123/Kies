@@ -1,7 +1,7 @@
 Kies, the menu system for creation of a text-only desktop type environment.
-(C) copyright Meraka Institute, 
- Meraka, CSIR, P.O. Box 395, Pretoria, 0001, South Africa 
-EMAIL: Willem van der Walt wvdwalt@csir.co.za
+(C) copyright Meraka Institute,  
+ Meraka, CSIR, P.O. Box 395, Pretoria, 0001, South Africa  
+EMAIL: [Willem van der Walt](wvdwalt@csir.co.za)  
 Web: http://www.meraka.org.za
 
 
@@ -15,7 +15,7 @@ version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE.  See the GNU General Public License for more details (file
-COPYING in the root directory).
+LICENSE in the root directory).
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass
