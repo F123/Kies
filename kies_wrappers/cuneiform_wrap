@@ -1,0 +1,10 @@
+#!/bin/bash
+finalpng=`echo $1|sed s'|.png|24.png|'g`
+#echo "$1 and $finalpng"
+
+#pngcp -d 8 -s 3 $1 $finalpng
+#cuneiform -o "$1".html -f html "$finalpng"
+cuneiform -o "$1".html -f text "$1"
+sed s'|^.*<body>|\n|' "$1".html > "$1".tmp.html
+rm "$1".html&&\
+mv "$1".tmp.html "$1".html

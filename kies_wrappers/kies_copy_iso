@@ -1,0 +1,42 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for getterm
+if (test $ok -eq 1)
+ then echo $0 "requires getterm which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for eject
+if (test $ok -eq 1)
+ then echo $0 "requires eject which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for pickafile
+if (test $ok -eq 1)
+ then echo $0 "requires pickafile which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for cdrecord
+if (test $ok -eq 1)
+ then echo $0 "requires cdrecord which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+tty=`getterm`
+echo "select the ISO image file"
+pickafile -b -m -r'application/x-iso9660-image'||exit
+iso=`cat $HOME/.kies/."$tty"file`
+
+eject /dev/cdrecorder
+read -p"please insert a blank cd, close the drive and press enter" wag
+cdrecord dev=/dev/cdrecorder -v $iso
+eject /dev/cdrecorder

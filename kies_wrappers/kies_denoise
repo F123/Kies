@@ -1,0 +1,2 @@
+#!/bin/bash
+sox "$1" d_"$1" vol 0.5 speexdsp -denoise 50 -agc 1 norm

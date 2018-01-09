@@ -1,0 +1,37 @@
+#!/bin/bash
+test -f "$1"&&book_player "$1"&&exit
+if test -d "$1" -a -f "$1".wav.bookmark
+	then book_player "$1".wav
+	test -f "$1".wav.bookmark||rm "$1".wav
+	exit
+fi
+
+if test -d "$1"
+	then touch "$1/$1.lst"
+cd "$1"
+ls|sort|while read naam;do
+	t=`file -b --mime-type "$naam"`
+echo "$t"|grep -q -i 'audio'&&echo  "$naam" >> $1.lst||echo $naam not audio
+done
+totfiles=`wc -l "$1".lst|cut -f1 -d' '`
+list="$1".lst
+echo "concattenating "$totfiles" audio files, please wait"
+book_wav="../$1.wav"
+sound="`sed -n 1p $list`"
+temp_wav="../$1_tmp.wav"
+/usr/bin/sox "$sound" "$book_wav"
+let filenum=2
+while test $filenum -le $totfiles;do
+	sound=`sed -n "$filenum"p $list`
+	sound=$(printf '%q' "$sound") 
+	/usr/bin/sox "$sound" "$temp_wav"
+	duration=`soxi -DT "$book_wav"`
+	ecasound -q -i:"$temp_wav" -o:"$book_wav" -y $duration
+	echo "concatinated $sound"
+	let filenum=$filenum+1
+done
+rm "$1".lst
+cd ..
+
+book_player "$1".wav
+fi

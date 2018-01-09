@@ -1,0 +1,3 @@
+tesseract_wrap imagename
+cuneiform_wrap imagename 
+ocrad_wrap imagename

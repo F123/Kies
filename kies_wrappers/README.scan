@@ -1,0 +1,94 @@
+Scripts for front-end for ocropus 
+Installation:
+1.  do:
+chmod +s /usr/bin/scanimage
+This is to allow a normal user to use the physical scanner.
+You can test first if this step is actually required on your machine
+by trying to scan a page with scanimage as a normal user.
+Scanimage forms part of the sane suite of programs which you can most likely
+ install using your standard package installer.
+You now need to install tesseract-ocr and ocropus.
+These are for the actual OCR task, and at the time of this writing,
+both are under heavy development.
+Get tesseract-ocr using the command:
+svn co http://tesseract-ocr.googlecode.com/svn/trunk/ tesseract-ocr
+Now change into the created directory and run ./configure&&make&&make install.
+You will have to do this as the root user or, at least the make install part.
+The make install will fail with an error like no rule to make java or simmelar.
+You can ignore this error.
+Change out of the directory and get ocropus with the command:
+svn checkout -r 864  http://ocropus.googlecode.com/svn/trunk/ ocropus
+This command gets a release of the code known to work.
+
+
+The kies_p2t, kies_scan kies_ocr and kies_p2tdoc scripts
+have been installed with the kies desktop and should be in your execution path.
+2.  the main script is kies_p2t, stands for paper to text for lack of a better
+name.  run it with kies_p2t:
+3.  You should here "press space to scan, q to quit.
+You have the following keys available:
+space to physically scan from a scanner and ocr the page.
+The results will be presented in lynx, the web browser.  That needs to be
+installed too.
+When you quit lynx with q, you will again hear the "press space to scan"
+prompt.
+Pressing i will allow you to ocr from an image file on your computer.
+You will be on the first file name in the default directory.
+Left arrow goes up one directory level, enter on a name selects it if it is
+a file.
+If it is a directory, you will descend into that directory and here the first
+file name in that directory.
+You can do a case-sensitive search using the slash key and a search next
+with the n key.
+The capital n key does a backword search.
+
+Note all your files are presented, not only image files.
+Once you have picked a file, it will be ocred.
+Once done the process is the same as for physically scanned pages, except
+that a multi-page image file is treated as if it is one long page.
+Back at the "press space to scan, q to quit" prompt,
+you have more keys.
+n Pressing the n key allows for selecting a document name using the pickafile file browser.
+Documents are stored in directories, so you would here "directory" after each name on the list.
+To select one of these names, press the right arrow.
+To create a new document, press the c key and enter the new name.
+  If it already exists, the page pointer is positioned at the next page number to be
+scanned.
+If you enter a new name, the document is created.
+Pressing q in the pickafile browser will cancel the document selection and the default document will remain what ever it was before n was pressed.
+
+At the "press space to scan " prompt again, you can press enter for where am I.
+You will here in which document you are.
+
+The default document is called unknown.
+
+Pressing d at the main prompt will discard the current page.  This is for
+getting rid of a badly ocred page.
+If you suspect that the physical page is upside-down on the scanner, you can 
+press a shift-u.  The current ocr-ed page will be discarded and the OCR 
+will be repeated on the scanned image which is first rotated by 180  degrees.
+Pressing shift-r will do the same as shift-u but with the difference that
+the image is rotated by 90 degrees.
+Once automatic page orientation has been implemented in most OCR engines, these options
+will be removed.  
+With both the shift-r and shift-u options, 
+the temporary image is left in the rotated state,
+enabling further rotation using either  of the two options.
+
+Pressing r for read, will present you the current document in an html file
+where you have links to the different pages.
+The first link is "jump to main content".  This takes you past the page
+links to the top of the first page.
+This is shown in lynx again.  Using the normal lynx browser commands you can
+read the document by pressing space for the content lower down.
+Once the r option is used on the document, 
+the html file it produces can be found in $HOME/p2tdocs/<docname>
+where <docname> is the name given with the n option, 
+or unknown when no name was given.
+Currently, you need to use the r option at least once after new
+pages was scanned in order to include the new pages
+in the html file.
+Pressing p from within lynx, you can write out the document to a text file.
+
+q Pressing q quits p2t.
+end.

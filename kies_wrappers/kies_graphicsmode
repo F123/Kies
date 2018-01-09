@@ -1,0 +1,6 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+startx -- -quiet vt12
+echo "returning to text mode"
+sleep 5
+killall -9 -q -u $USER speech-dispatcher

@@ -1,0 +1,27 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for cuneiform
+if (test $ok -eq 1)
+ then echo $0 "requires cuneiform  which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+let engine_number=2
+if test $# -eq 2
+   then test $2 -gt 0 -a $2 -lt 100&&let engine_number=$2||let engine_number=2
+fi
+ocr_command=`sed -n "$engine_number"p /opt/kies/share/kies/kies_wrappers/kies_ocr_engines.txt`
+ocr_command=`echo $ocr_command|sed s'|imagename|'$1'|'g`
+#next line was required for cuneiform.
+#ocr_command=`echo $ocr_command|sed s'|"||'g`
+echo $ocr_command
+eval "$ocr_command"
+
+
+#ocroscript rec-tess "$1" > "$1".html

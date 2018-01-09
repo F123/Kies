@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Trying to bring up the wifi interface, please wait."
+ifup ra0&&\
+route del default eth0 2> /dev/null

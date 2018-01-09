@@ -1,0 +1,175 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for pickafile
+if (test $ok -eq 1)
+ then echo $0 "requires pickafile which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for kies_p2tdoc
+if (test $ok -eq 1)
+ then echo $0 "requires kies_p2tdoc which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for kies_scan
+if (test $ok -eq 1)
+ then echo $0 "requires kies_scan which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for kies_ocr_image
+if (test $ok -eq 1)
+ then echo $0 "requires kies_ocr_image which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for catchkey
+if (test $ok -eq 1)
+ then echo $0 "requires catchkey which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for lynx
+if (test $ok -eq 1)
+ then echo $0 "requires lynx which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+runme='enter'
+down='down'
+up='up'
+quit='q'
+read='r'
+rotate='R'
+upsidedown='U'
+space='space'
+fromimage='i'
+newdoc='n'
+landscape_toggle='l'
+del='d'
+engine_select='e'
+if (test $# -gt 0)
+	then let engine=$1
+	else let engine=2
+	fi
+echo "using engine $engine"
+engines=`wc -l /opt/kies/share/kies/kies_wrappers/kies_ocr_engines.txt|cut -f1 -d' '`
+landscape='p'
+	
+let pagenum=1
+doc="unknown"
+
+function setlastpage
+{
+if (test -d p2t_docs/"$doc")
+           then let pagenum=1
+           while (test -e p2t_docs/"$doc"/page"$pagenum".html);do
+                     let pagenum=$pagenum+1
+           done
+else
+   mkdir -p $HOME/p2t_docs/"$doc"
+       let pagenum=1
+fi
+}
+function ocr_rotated {
+     convert -rotate $1 $HOME/tmp.png $HOME/rotated.png
+     rm $HOME/tmp.png
+     mv $HOME/rotated.png $HOME/tmp.png
+     echo "rotating $1 degrees."
+     kies_ocr $HOME/tmp.png $engine
+     lynx $HOME/tmp.png.html
+     mv tmp.png.html p2t_docs/"$doc"/page"$pagenum".html
+     let pagenum=$pagenum+1
+}
+function discard {
+     let pagenum=$pagenum-1
+     rm p2t_docs/"$doc"/page"$pagenum".html
+     echo :"discarded last page next page will be $pagenum"
+}
+setlastpage
+
+wag='z'
+
+while (test "$wag" != "$quit");do
+
+echo -n "press space to scan, q to quit"
+
+wag=`catchkey`
+if (test "$wag" = "$quit") 
+ then echo "exiting"
+    exit
+fi
+if (test "$wag" = "$landscape_toggle")
+	then test "$landscape" = "p"&&landscape="l"||landscape="p"
+		echo "orientation now $landscape"
+	fi
+	
+if (test "$wag" = "$newdoc") 
+then houdoc=$doc
+thisdir=$PWD
+cd $HOME/p2t_docs
+pickafile -m -r'directory'||doc=$houdoc
+cd $thisdir
+choice=$HOME/.kies/.`getterm`file
+doc=`cat $choice`
+doc=`basename $doc`
+echo "document is now $doc."
+
+#read -p "document name? " doc
+   test -f $HOME/p2t_docs/"$doc"&&echo $doc is a file, reverting to $houdoc&&doc=$houdoc
+   setlastpage
+fi      
+                 
+      
+if (test "$wag" = "$space")
+then kies_scan $engine $landscape
+   mv tmp.png.html p2t_docs/"$doc"/page"$pagenum".html
+    let pagenum=$pagenum+1
+fi
+if (test "$wag" = "$fromimage")
+then echo "select an image file to be ocred"
+pickafile -r'image
+pdf' -m "kies_ocr_image $engine"
+   mv tmp.png.html p2t_docs/"$doc"/page"$pagenum".html
+    let pagenum=$pagenum+1
+fi
+
+if (test "$wag" = "$engine_select")
+	then let engine=$engine+1
+	if test $engine -gt $engines
+		then let engine=1
+	fi
+	echo "ocr engine number $engine selected"
+fi
+
+if (test "$wag" = "$del")
+then discard
+fi
+if (test "$wag" = "$rotate")
+then discard
+ ocr_rotated 90
+fi
+ 
+if (test "$wag" = "$upsidedown")
+then discard
+ ocr_rotated 180
+fi
+ 
+if (test "$wag" = "$runme")
+then echo "you are in $doc page $pagenum"
+fi
+if (test "$wag" = "$read")
+then kies_p2tdoc "$doc"
+  lynx p2t_docs/"$doc"/"$doc".html
+fi 
+done
+

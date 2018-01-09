@@ -1,0 +1,7 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+export TERM=linux
+export SHELL=/bin/bash
+export ECASOUND=/opt/kies/bin/ecasound
+/opt/kies/bin/kies main
+

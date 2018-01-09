@@ -1,0 +1,11 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+test $# -lt 1&&echo "usage: $0 <interface> where <interface> is your wireless interface"&&exit
+test -d $HOME/.kies||mkdir $HOME/.kies
+/sbin/ifconfig "$1" up
+echo "Scanning for wireless networks, please wait."
+sleep 5
+/sbin/iwlist "$1" scanning|tr '\n' '|'|sed -e s'/|          Cell/\nCell/'g >"$HOME"/.kies/kies_found_wifi
+kies_wifisplit|sort|uniq|sed '/^$/'d  > $HOME/.kies/kies_wifi_list
+cut -f1 -d'|' $HOME/.kies/kies_wifi_list
+

@@ -1,0 +1,117 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+
+stty raw -echo
+key=`dd count=1 2> /dev/null|hexdump|tail -2|head -1|cut -f2- -d' '`
+stty cooked echo
+#echo $key
+case "$key" in
+"000d                                   ") echo enter
+;;
+"0020                                   ") echo space
+;;
+"5b1b 0041                              ") echo up
+;;
+"5b1b 0042                              ") echo down
+;;
+"5b1b 0044                              ") echo left
+;;
+"5b1b 0043                              ") echo right
+;;
+"5b1b 415b                              ") echo f1
+;;
+"5b1b 425b                              ") echo f2
+;;
+"5b1b 435b                              ") echo f3
+;;
+"5b1b 445b                              ") echo f4
+;;
+"5b1b 455b                              ") echo f5
+;;
+"5b1b 3731 007e                         ") echo f6
+;;
+"5b1b 3831 007e                         ") echo f7
+;;
+"5b1b 3931 007e                         ") echo f8
+;;
+"5b1b 3032 007e                         ") echo f9
+;;
+"5b1b 3132 007e                         ") echo f10
+;;
+"5b1b 3332 007e                         ") echo f11
+;;
+"5b1b 3432 007e                         ") echo f12
+;;
+"5b1b 7e35                              ") echo pageup
+;;
+"5b1b 7e36                              ") echo pagedown
+;;
+"5b1b 7e31                              ") echo "home"
+;;
+"5b1b 7e34                              ") echo "end"
+;;
+"5b1b 7e32                              ") echo "insert"
+;;
+"5b1b 7e33                              ") echo "delete"
+;;
+"001b                                   ") echo escape
+;;
+"5b1b 3532 007e                         ") echo shift_f1
+;;
+"5b1b 3632 007e                         ") echo shift_f2
+;;
+"5b1b 3832 007e                         ") echo shift_f3
+;;
+"5b1b 3932 007e                         ") echo shift_f4
+;;
+"5b1b 3133 007e                         ") echo shift_f5
+;;
+"5b1b 3233 007e                         ") echo shift_f6
+;;
+"5b1b 3333 007e                         ") echo shift_f7
+;;
+"5b1b 3433 007e                         ") echo shift_f8
+;;
+"5b1b 3533 007e                         ") echo shift_f9
+;;
+"5b1b 3633 007e                         ") echo shift_f10
+;;
+"5b1b 3733 007e                         ") echo shift_f11
+;;
+"5b1b 3833 007e                         ") echo shift_f12
+;;
+"3404 0032                              ") echo "ctrl_f1"
+;;
+"3404 0033                              ") echo "ctrl_f2"
+;;
+"3404 0034                              ") echo "ctrl_f3"
+;;
+"3404 0035                              ") echo "ctrl_f4"
+;;
+"3404 0036                              ") echo "ctrl_f5"
+;;
+"3404 0037                              ") echo "ctrl_f6"
+;;
+"3504 0030                              ") echo "ctrl_f7"
+;;
+"3504 0031                              ") echo "ctrl_f8"
+;;
+"3504 0032                              ") echo "ctrl_f9"
+;;
+"3504 0033                              ") echo "ctrl_f10"
+;;
+"3504 0034                              ") echo "ctrl_f11"
+;;
+"3504 0035                              ") echo "ctrl_f12"
+;;
+
+
+#any other key
+*) while (test "`echo $key|cut -c1`" = "0");do
+key=`echo "$key"|cut -c2-`
+done
+echo -e -n "\x$key"|cut -c1
+;;
+esac
+
+

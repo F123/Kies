@@ -1,0 +1,51 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for scanimage
+if (test $ok -eq 1)
+ then echo $0 "requires scanimage which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for convert
+if (test $ok -eq 1)
+ then echo $0 "requires convert from the ImageMagic package which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for kies_ocr
+if (test $ok -eq 1)
+ then echo $0 "requires kies_ocr which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for lynx
+if (test $ok -eq 1)
+ then echo $0 "requires lynx which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+if (test $# -lt 2)
+then echo "$0 must be called with the engine number and p or l, exiting"
+	exit 1
+	fi
+	
+#Some scanners complain about contrast setting
+##scanimage --mode gray --contrast 400 --resolution 300 > $HOME/tmp.pnm&&\
+#scanimage --mode gray --resolution 300 > $HOME/tmp.pnm&&\
+if (test "$2" = "l")
+then convert $HOME/tmp.pnm -rotate 270 -monochrome $HOME/tmp.png
+else convert $HOME/tmp.pnm -monochrome $HOME/tmp.png
+fi
+
+kies_ocr $HOME/tmp.png $1&&\
+lynx $HOME/tmp.png.html
+

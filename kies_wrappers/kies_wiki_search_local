@@ -1,0 +1,7 @@
+if (test $# -lt 1)
+then read -p "search for? " kry
+soekna=`echo $kry|sed 's/ /+/g'`
+else soekna=$1
+fi
+
+lynx http://localhost/wikki/index.php?search=$soekna

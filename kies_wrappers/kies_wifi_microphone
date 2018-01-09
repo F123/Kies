@@ -1,0 +1,25 @@
+#released under GNU GPL v 3 or at your option any later version
+#listen to a wifi audio stream from an android microphone using ipwebcam
+ip="192.168.43.1"
+read -e -p"What is the wifi microphone's IP address? " -i $ip ip
+echo "Looking for the microphone, please wait"
+ping -c 3 $ip 2>&1 > /dev/null
+if test $? -ne 0
+then echo "Could not connect to $ip, aboarting"
+	exit 1 
+fi
+#host is up, does ipwebcam run?
+#test if $ip port 8080 is open
+nc -z $ip 8080
+if test $? -ne 0
+	then echo "ipwebcam seems not to be running, aboarting"
+	exit 1
+fi
+
+echo "Press q to stop recording."
+mplayer -really-quiet -ao pcm:file=wifi.wav http://$ip:8080/audio.wav 2> /dev/null
+
+sox wifi.wav -c2 realtime.wav remix 1-1&&rm wifi.wav
+
+
+

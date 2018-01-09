@@ -1,0 +1,7 @@
+#!/bin/bash
+espeak -ven "resetting speech" 2>&1 >  /dev/null
+sudo killall -9 speechd-up
+sudo killall -9 speech-dispatcher
+sleep 3
+/etc/init.d/speech-dispatcher start
+speechd-up -d 2>&1 > /dev/null

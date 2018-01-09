@@ -1,0 +1,11 @@
+let firsttime=0
+test -d $HOME/.kies||let firsttime=1
+if (test $firsttime -eq 1)
+ then mkdir $HOME/.kies
+       echo 'add an item to the main menu,kiesadd main.txt' > $HOME/.kies/main.txt
+     exit
+fi
+
+read -p "menu name? " name
+filename=`echo $name|sed s'/ /_/'g`
+echo "add an item to "$name" ,kiesadd "$filename".txt" > $HOME/.kies/$filename.txt

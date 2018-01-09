@@ -1,0 +1,4 @@
+#!/bin/bash
+test -f ~/.kies/help_me.pid&&kill -9  `cat ~/.kies/help_me.pid`
+ssh -f -N -R 1967:localhost:22 support@www.sanote.co.za&& echo $$ > ~/.kies/help_me.pid&&espeak -ven "Allowing authorized support staff access to this machine"
+

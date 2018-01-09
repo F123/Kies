@@ -1,0 +1,63 @@
+
+The Kies Menu system
+The name Kies is the Afrikaans word for choose.
+Enabling a user to choose a task he/she wants the computer to perform,
+ is the only function of the program.  
+On startup, the user hears the number of available options followed by the 
+first option on the menu.  browsing through
+the available options is done with the up and down arrow keys or by pressing
+the first letter of the option's description.
+
+Once the user has heard the desired task, he/she press enter to perform that
+task.  When the user exits the activated program, or if the 
+program exits by it self,
+the user again hears the task as in the menu description.  When moving
+through the menu with the up and down arrows the menu will wrap from the
+last to the first menu option as would be expected.  
+If the first letter of the description is used for navigation, the menu
+would wrap among the options starting with the particular letter.
+Pressing q exits the
+menu.
+
+The user needs to learn the four keys down up enter and quit and that is
+all that is required for basic use.
+
+A menu tree IE a menu of menus can be built by using a helper script called
+newmenu which creates an empty menu with one option:
+add an item to the menu.  Another helper script, kiesadd is used to add an
+item to an empty menu.
+A new menu can be called from within another menu, giving the tree effect.
+Technical details on the Kies menu system
+It is written in bash but require hexdump and dd to be installed as it calls a small
+ script which uses these commands to handle reading of keys.  The hexdump
+and dd commands are part of all Linuxes and Unixes I have ever worked with.  
+
+Kies requires a .kies directory in
+the user's $HOME with a text file containing the menu information in the
+following format:
+description,command.
+It has the limitation that commas cannot be used in the description or in
+the command.  The kiesadd script asks for the two fields and add it to the
+file.  The newmenu script creates a new file in the given format with the
+add an item option.
+When the newmenu script is executed for the first time by a user, the .kies
+directory is created, containing main.txt.
+
+The files, as many as required, are all stored in $HOME/.kies.
+A given menu is brought up by the command:
+kies menuname.txt.  Kies will look in $HOME/.kies for the file.
+Editing an existing menu currently has to be done using a text editor.
+Installation:
+Copy catchkey, kies, kiesadd and  newmenu
+to /opt/kies/bin
+Run newmenu as the user to create $HOME/.kies/main.txt.
+run kies main.txt as the user and use the add item option to add entries.
+
+Copy kiesmenu to /bin
+If you want to have a given user only work from the menu after login, edit
+/etc/passwd and change his shell from /bin/bash to /bin/kiesmenu.
+The user is then logged out when he quits the menu.
+This method has the side-effect that when one tries to ssh to this user from
+another machine, the menu and not the shell is called.
+This effectively disable the use of ssh with this user's account.
+

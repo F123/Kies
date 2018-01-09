@@ -1,0 +1,23 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for catdoc
+if (test $ok -eq 1)
+ then echo $0 "requires catdoc which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for less
+if (test $ok -eq 1)
+ then echo $0 "requires less which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+catdoc "$1"|less -P"press q to quit, space for next page, b back one screen"

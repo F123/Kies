@@ -1,0 +1,122 @@
+#!/usr/bin/python
+#Released under GNU General Public License version 3, see the file COPYING for details.
+#lists all available devices, allowing for a print queue to be added
+
+import cups, sys, commands, readline
+#read a line with a default value
+def raw_input_with_default(prompt, default):
+      def pre_input_hook():
+          readline.insert_text(default)
+          readline.redisplay()
+
+      readline.set_pre_input_hook(pre_input_hook)
+      try:
+          return raw_input(prompt)
+      finally:
+          readline.set_pre_input_hook(None)
+#end of function 
+global c
+c=cups.Connection()
+print "Searching for printers, please wait"
+found_printers=c.getDevices()
+number_found=len(found_printers)
+this_printer=0
+key="z"
+if number_found < 1:
+  print "no printers found"
+  exit
+def select_driver(maak): 
+  ppds=c.getPPDs(ppd_make_and_model=maak)
+  this_ppd=0
+  print "Please select a driver for your "+maak
+  number_of_ppds_found=len(ppds)
+  key='z'
+  searching=False
+  searchfor=''
+  lastpos=0
+  
+
+  while key != 'q':
+    ppd_name = ppds.keys()[this_ppd]
+    ppd=ppds[ppd_name]
+    if not searching:
+      sys.stdout.write(ppd['ppd-make-and-model'])
+      sys.stdout.flush()
+      key=commands.getoutput("catchkey")
+      print
+    if key=='n':
+      if len(searchfor) > 0:
+        searching=True
+        this_ppd=this_ppd-1 #otherwise it just matches on the one it found previously.
+        key='down'
+      else:
+        key='/'
+    if key=='/':
+      searchfor=raw_input("search for? ")
+      searching=True
+      key='down'
+      lastpos=this_ppd
+      
+    if key == 'down':
+
+      if searching:
+        if searchfor.upper() in ppd['ppd-make-and-model'].upper():
+          searching=False
+          this_ppd=this_ppd-1
+        
+      this_ppd=this_ppd+1
+      if this_ppd==number_of_ppds_found:
+        if searching:
+          print searchfor+" not found!"
+          this_ppd=lastpos
+          searching=False
+        
+        this_ppd=0
+        print chr(7)
+        
+    if key=='up':
+      this_ppd=this_ppd-1
+      if this_ppd < 0:
+        this_ppd=number_of_ppds_found-1
+    if key=='enter':
+      print "you have selected to add "+ppd_name
+      return ppd_name
+
+  
+  
+while key != 'q':
+  printer_name = found_printers.keys()[this_printer]
+  drukker=found_printers[printer_name]
+  showprinter=drukker['device-make-and-model']+" "+drukker['device-info']
+  if len(drukker['device-location']) > 0:
+    showprinter=showprinter+' location: '+drukker['device-location']
+  showprinter=showprinter+' URI: '+printer_name
+  sys.stdout.write(showprinter)
+  sys.stdout.flush()
+  key=commands.getoutput("catchkey")
+  print
+  if key == 'down':
+    this_printer=this_printer+1
+    if this_printer==number_found:
+      this_printer=0
+      print chr(7)
+  if key=='up':
+    this_printer=this_printer-1
+    if this_printer < 0:
+      this_printer=number_found-1
+  if key=='enter':
+    print "you have selected to add "+printer_name
+    queue=drukker['device-info'].replace(' ', '-')
+    soort=drukker['device-make-and-model'].split(' ')
+    driver=select_driver(soort[0])
+    queue=raw_input_with_default("suggested queue name, edit to your liking: ", queue)
+    drukker['device-info']=raw_input_with_default("printer description: ", drukker['device-info'])
+    drukker['device-location']=raw_input_with_default("printer physical location: ", drukker['device-location'])    
+    
+    c.addPrinter(queue, device=printer_name, info=drukker['device-info'], location=drukker['device-location'], ppdname=driver)
+    c.enablePrinter(queue)
+    c.acceptJobs(queue)
+    key='q'
+    
+  
+exit

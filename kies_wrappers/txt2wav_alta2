@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "Preparing for synthesis"
+cp "$1" /tmp/synth.txt
+fromdos /tmp/synth.txt
+recode latin1..UTF-8 /tmp/synth.txt
+sinsplit.py /tmp/synth.txt $HOME/synth.txt
+echo "starting synthesis"
+txt2wav alta2 $HOME/synth.txt
+mv $HOME/synth.txt.wav "$1".wav
+rm /tmp/synth.txt
+rm $HOME/synth.txt
+

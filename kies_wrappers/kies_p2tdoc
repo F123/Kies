@@ -1,0 +1,25 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+#helper script to kies_p2t.
+
+let pagenum=1
+lastpage=`ls p2t_docs/"$1"|sort -t '.' -k1.5n|tail -1|cut -c5-|cut -f1 -d'.'`
+echo "last page is:"$lastpage
+echo $1 > p2t_docs/"$1".txt
+echo '<html><title>'$1'</title><body>' > p2t_docs/"$1"/"$1".html
+echo '<a href="#page1">Jump to main content</a><br>' >> p2t_docs/"$1"/"$1".html
+
+while (test $pagenum -le $lastpage);do
+
+if (test -e p2t_docs/"$1"/page"$pagenum".html)
+then echo '<a href="#page'$pagenum'">page '$pagenum'</a><br>' >> p2t_docs/"$1"/$1.html
+    echo '<a name="page'$pagenum'"></a><h1>page '$pagenum'</h1>' >> p2t_docs/"$1"/main.html
+    cat p2t_docs/"$1"/page"$pagenum".html >> p2t_docs/"$1"/main.html
+fi
+let pagenum=$pagenum+1
+done
+echo '</body></html>' >> p2t_docs/"$1"/main.html
+cat p2t_docs/"$1"/main.html >> p2t_docs/"$1"/"$1".html
+rm p2t_docs/"$1"/main.html
+
+

@@ -1,0 +1,46 @@
+#!/usr/bin/python
+#Released under GNU General Public License version 3, see the file COPYING for details.
+#lists all known print queues, showing the default.
+#pressing enter on a queue name sets it as default
+
+import cups, sys, commands
+c=cups.Connection()
+default_print_queue=c.getDefault()
+printerlist=c.getPrinters()
+known_queues=len(printerlist)
+this_queue=0
+key="z"
+if known_queues < 1:
+  print "No existing defined printers, define one first"
+  key='q'
+  exit
+  
+  
+  
+while key != 'q':
+  printer_name = printerlist.keys()[this_queue]
+  sys.stdout.write(printer_name)
+  sys.stdout.flush()
+  if printer_name == default_print_queue:
+    sys.stdout.write(" is the default")
+    sys.stdout.flush()
+  key=commands.getoutput("catchkey")
+  print
+  if key=='d':
+    c.deletePrinter(printer_name)
+    printerlist=c.getPrinters()
+    known_queues=len(printerlist)
+  if key == 'down':
+    this_queue=this_queue+1
+    if this_queue==known_queues:
+      this_queue=0
+      print chr(7)
+  if key=='up':
+    this_queue=this_queue-1
+    if this_queue < 0:
+      this_queue=known_queues-1
+  if key=='enter':
+    c.setDefault(printer_name)
+    default_print_queue=c.getDefault()
+
+exit

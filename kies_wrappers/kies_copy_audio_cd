@@ -1,0 +1,27 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for cdrdao
+if (test $ok -eq 1)
+ then echo -e "$0 requires cdrdao to be installed and cannot continue"
+  read -t8 -p"Press enter" wag
+  exit 1
+fi
+
+eject /dev/cdrecorder
+read -p"insert the audio cd and press enter" wag
+#eject -t /dev/cdrecorder
+rm -f tmp.toc data.bin
+cdrdao read-cd  tmp.toc
+eject /dev/cdrecorder
+read -p "insert a blank disk and press enter" wag
+cdrdao write tmp.toc&&\
+read -p "copy was successful, press enter." wag||read -p "the copy seem to have failed, press enter." wag
+eject /dev/cdrecorder
+
+

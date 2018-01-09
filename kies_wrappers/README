@@ -1,0 +1,48 @@
+These are wrapper scripts, mainly for use with the kies menu system.
+Most of them however can be used on their own as commands too.
+Some of these scripts make use of the pickafile and catchkey scripts.
+Pickafile can be found in the file_browser directory and catchkey in the
+menu_system directory.
+These scripts make use of various programs, depending on the task for which
+the particular script is a wrapper.
+Many of these scripts expect to find a $HOME/.kies directory.
+Here follows a list with short descriptions of the current scripts.
+Most of the scripts are called from some of the menus which can be found in
+../menu_system/menus.
+kies_cleantrash: removes files from trash
+configure_email : Configures exim and pine
+kies_copy : Script using pickafile to allow for a menu type copy.
+kies_copy_data_cd : Wrapper for reading and writing a data CD
+kies_copy_iso : Allows selection of iso image and writes onto CD.
+kies_copy_audio_cd : Wrapper for the copying of a sound CD
+kies_getfromtrash : Rapper to retrieve files from trash
+kies_ipaddr : Shows the ip address of the default gateway interface.
+kies_lookup : Promts for word to look up in the dict dictionary.
+kies_movetotrash : used when files are removed using the files menu.
+kies_pdfconvert : Converts a .pdf file to html and display it in lynx.
+                   The converted file is left in a directory called
+<pdf_file_name>.converted/name.html where
+			<pdf_file_name> is the name of the .pdf file
+			name.html <pdf_file_name> with the .pdf portion
+			replaced with .html.
+
+kies_ocr
+kies_scan
+kies_ocr_image
+kies_p2t
+kies_p2tdoc
+README.scan
+These are all part of a front-end for the ocropus OCR engine.
+kies_playdaisyfromcd : 
+This is a wrapper for playing daisy books using either idair or listenup.
+Call it with the desired player as a command-line parameter.
+It defaults to Idair.
+A binary for Idair that runs under Linux is available from:
+http://superb-east.dl.sourceforge.net/sourceforge/idair/idair-0.8.3.linux.bin.tgz
+The source code needs to be compiled using a very old version of gcc.
+Listen-up is available from: http://linux-speakup.org/listenup.html
+
+kies_search_google : Wrapper for searching google
+kies_trashsize : Reports the disk space used up by the trash.
+kies_wiki_search_local : wrapper for offline search of wikipedia
+kies_wiki_search_online : wrapper for online search of wikipedia

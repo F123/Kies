@@ -1,0 +1,30 @@
+#!/bin/bash
+#---------------------- uberscript2 environment variables ----------------------
+
+export SPEECHROOT="/home/qfrency/speech"
+
+export SPEECHPYTHON="$SPEECHROOT/speect/build/swig/python:$SPEECHROOT/frontend:$SPEECHROOT/modules"
+export PYTHONPATH="$SPEECHPYTHON:$PYTHONPATH"
+
+export SPEECHBIN="$SPEECHROOT/local/bin:$SPEECHROOT/misc"
+export PATH="$SPEECHBIN:$PATH"
+
+#-------------------------------------------------------------------------------
+voice=`basename "$0"|cut -c14-`
+echo "Preparing for synthesis using $voice"
+see --nopager "$1" > /tmp/synth.txt
+fromdos /tmp/synth.txt
+sinsplit.py /tmp/synth.txt $HOME/synth.txt 2> /dev/null
+echo "starting synthesis"
+txt2wav $voice $HOME/synth.txt 2> /dev/null
+files=`ls $HOME/synth.txt_?.wav|wc -l`
+
+let tel=1
+ls $HOME/synth.txt_?.wav|sort|while read wavs;do
+	mv $wavs "$1"_$tel.wav
+	let tel=$tel+1
+done
+test $files -eq 1&&mv "$1"_1.wav "$1".wav	
+rm /tmp/synth.txt
+rm $HOME/synth.txt
+

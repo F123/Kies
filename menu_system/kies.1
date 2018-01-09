@@ -1,0 +1,88 @@
+.TH KIES 1
+
+.SH NAME 
+kies \-  The menu system for creation of a text-only desktop type environment.
+
+.SH SYNOPSIS 
+kies <menu_name>
+
+.SH DESCRIPTION 
+kies is a collection of mainly bash scripts which 
+together form a user-friendly, speech-friendly desktop for the Linux/UNIX 
+console.
+The name Kies is the Afrikaans word for choose.
+It refers to both the collection of scripts and to the main script.
+This manual mainly describes the main script.
+
+Note that all of these scripts are developed to be speech-friendly and
+not to look good on a screen.  It assumes that a console-based screen-reader is
+running and therefore is not self-voicing.
+It also should work with Braille through the brltty program 
+available from http://mielke.cc/brltty/. This has not
+been tested yet.  Extensive testing with speakup,
+ available from http://www.linux-speakup.org,  has been done and some
+testing with yasr, available from http://yasr.sourceforge.net.
+
+Speakup and yasr are screen-readers for the Linux console
+
+.SH OPTIONS 
+Currently the main script, kies, has no options. 
+It has to be called with one argument, the file name of the menu to be used.
+A menu tree IE a menu of menus can be built by using a helper script called
+newmenu which creates an empty menu with one option:
+add an item to the menu.  Another helper script, kiesadd is used to add an
+item to an empty menu.
+A new menu can be called from within another menu, giving the tree effect.
+
+.SH RESOURCES
+kies makes use of the menu files in $HOME/.kies.
+When calling such a menu file with kies, Just use the menu name without the
+".txt" extention.
+When the newmenu script is run for the first time by the user, the .kies directory 
+is created with one menu, main.txt.
+Some existing menus can be found in /opt/kies/share/kies/menu_system/menus
+Kies requires catchkey, 
+a script which takes input from the keyboard and produce human-readable output 
+for keys like the f1-f12 keys and the arrows.
+The wrapper scripts refered to in the sample menus
+Should have been installed into /opt/kies/bin.
+Please also read the README files in the different directories under
+/opt/kies/share/kies.
+
+.SH DIAGNOSTICS 
+Kies should always return 0.
+
+.SH SEE ALSO 
+brltty pickafile, kies_createtab, yasr.
+
+.SH COPYRIGHT 
+Kies is Copyright (C) copyright Meraka Institute, 
+ Meraka, CSIR, P.O. Box 395, Pretoria, 0001, South Africa 
+EMAIL: Willem van der Walt wvdwalt@csir.co.za
+Web: http://www.meraka.org.za
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+MA 02111-1307 USA.
+
+.SH BUGS 
+Editing an existing menu currently has to be done using a text editor.
+A script called kiesmenu is copied to /opt/kies/bin during installation.
+When this script is called in place of /bin/bash as the shell of the user, 
+ssh cannot be used.
+
+.SH AUTHOR 
+Willem van der Walt
+E-mail : wvdwalt@csir.co.za
+

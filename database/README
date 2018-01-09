@@ -1,0 +1,102 @@
+Creation of a simple single-table database.
+For filling this need, I have written a bash script which generates a
+database table in Mysql, an open-source RDBMS and a set of php files that
+serve as a user/speech-friendly front-end.  When run, the script asks for a
+database name and the names of headings.  Pressing enter on an empty heading
+entry terminates the program, creating the front-end and the table in the
+database.
+Currently the front end allows for adding, searching and changing entries in
+the table.  The main objective here, was to create a simple, easy to use
+system with minimum functionality.
+The generated front-end is used through the lynx web browser.  Another
+text-based web browser can also be used if desired.
+The php code that is generated uses adodb, a database abstraction layer that
+make it easy to change the database back-end from mysql to a number of
+other RDBMS products.  A good candidate might be sql-lite, a lite-weight sql
+compliant RDBMS.
+Technical comments
+The generated php has to be run through a web-server which would require
+space and processing power on a small device.
+The thing actually works, but rather serve as proof of concept than a final
+product.
+To install, put the createtab file in the execution path.
+E.G. cp createtab /opt/kies/bin
+Install a web server with php support.
+Extract the adodb468.tgz installed in /opt/kies/share/kies/database into
+the Documentroot directory of your webserver, E.G.
+cd /var/www
+tar zxvf /opt/kies/share/kies/database/adodb468.tgz
+
+Create a database called personal in mysql.
+mysqladmin -uroot create personal
+
+Run createtab from the user account.
+It will create $HOME/.kies/data if it does not exist.
+Give the web server access to that directory.
+Copy config.php to $HOME/.kies/data.
+Edit this file and make sure that the adodb directory is set to where you
+have extracted adodb.
+Create a link in the webserver's DocumentRoot directory pointing to
+$HOME/.kies/data
+E.G. ln -s $HOME/.kies/data /var/www/db
+point your web browser to http://localhost/db/
+E.G. lynx http://localhost/db/
+You should here the name you gave when you created the database with
+createtab.
+When you have created more databases, the new ones will be listed on this
+page in order of creation.
+
+Select the database by pressing enter.
+You should get a page with links to add to your database, another link to
+search/change it and a third one going back to your database list.
+
+Adding to the database.
+Select this option by pressing enter when on the link.
+A form should appear with the headings entered when the database was
+created.
+You can enter a maximum of 255 characters per heading, but only 50 is shown
+at a time.
+The display will scroll to the right when you go over 50.
+When all the headings have been populated, you should be on the add option. 
+Press enter to add the record to your database.
+You should now get a message confirming a successfull add.
+You should be on an option titled "add another".
+When this option is used by pressing enter, you will get a form filled out
+with the data entered when adding the first record.  In lynx use ctrl-u to
+clear the entries you do not want.  In practice this is quite usefull when
+adding let us say the songs in a cd database where the artist, album title
+and year remains the same for all the songs.
+A reset button will be added later which can be used to clear all the entries
+on the page at once.
+
+Searching the database.
+When the search/change option is selected by pressing enter, the same form
+that was use for adding appears.
+When this form is left blank, all the added entries will be shown.
+Restrict the search by entering data into any or all of the heading entries. 
+At the bottom of the form, there now is a search option.  Press enter to
+activate the search.
+
+The content of the first three headings are displayed as a link.  hopefully
+this is enough information to identify the record you want to change.
+Press enter on the link to get the form with all the headings.  There will
+be a link for each positive search result.
+Once a link has been activated, the full form with all the heading appears. 
+You can now edit the entries.  A "change" option appears as the last entry. 
+If you change your mind and want to cancel an operation, just press Q to
+quit the browser.
+
+When you are on any one of the forms, you can use your up arrow to quickly
+get to the add/search/change option.  This is usefull if let us say you want
+to correct the spelling under the first heading and there is 20 headings in
+total.  You can correct the spelling and press the up-arrow once to get to
+the change option without having to down-arrow through all 19 other headings
+just to get to "change".
+
+Removing of records.
+Removing of records is not yet implemented, but there is a work-around for
+now.
+Each record has a uneque number which is used internally to disstinguish
+among the different records.  When you no longer want an entry, search for
+the record and select to change it.  Simply clear all the entries when you
+want to add another record and put the new information in.

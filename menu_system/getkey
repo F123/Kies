@@ -1,0 +1,20 @@
+#!/usr/bin/tclsh
+ exec stty raw -echo
+ fconfigure stdin -buffering none -blocking 1
+ fconfigure stdout -translation crlf
+   set key [format "0x%02X" [scan [read stdin 1] %c]]
+   if {$key == 0x1B} {
+     set term 0
+     while {(! [fblocked stdin] ) && $term == 0} {
+       set chr [format "0x%02X" [scan [read stdin 1] %c]]
+       if {$chr >= 0x41 && $chr <= 0x48} {set term 1}
+       if {$chr >= 0x50 && $chr <= 0x53} {set term 1}
+       if {$chr == 0x7E} {set term 1}
+       if {$chr == 0x1B} {exec stty -raw echo; exit}
+       lappend key $chr
+     }
+   }
+   puts -nonewline $key
+   flush stdout
+   after 20
+exec stty -raw echo;

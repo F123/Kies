@@ -1,0 +1,6 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+
+read -p "When the trash is cleaned out, the data that was there is lost
+forever. Clean the trash y/n" wag
+test "$wag" = "y"&&rm -rf $HOME/.kies/.trash/*

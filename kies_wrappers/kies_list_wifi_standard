@@ -1,0 +1,4 @@
+#!/bin/bash
+iwlist wlan0 scanning|grep ESSID|sort|cut -f2 -d'"'|uniq > $HOME/.kies/wireless.txt
+cat $HOME/.kies/wireless.txt
+read -p "press enter to continue" stand

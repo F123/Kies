@@ -1,0 +1,2 @@
+#!/bin/bash
+eBook-speaker -ltn "$1"

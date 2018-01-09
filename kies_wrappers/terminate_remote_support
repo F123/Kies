@@ -1,0 +1,3 @@
+#!/bin/bash
+test -f ~/.kies/help_me.pid&&kill -9 `cat ~/.kies/help_me.pid`&&espeak -ven
+"remote support staff access terminated"

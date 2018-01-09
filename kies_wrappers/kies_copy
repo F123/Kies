@@ -1,0 +1,38 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for getterm
+if (test $ok -eq 1)
+ then echo $0 "requires getterm which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for pickafile
+if (test $ok -eq 1)
+ then echo $0 "requires pickafile which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+tty=`getterm`
+from=$PWD
+to=$PWD
+test $# -ge 1&&from="$1"
+test $# -eq 2&&to="$2"
+cd "$from"&&\
+pickafile&&\
+echo pick destination&&\
+cd "$to"&&\
+source=`cat $HOME/.kies/."$tty"file`&&\
+pickafile&&\
+dest=`cat $HOME/.kies/."$tty"file`&&\
+cp -rv "$source" "$dest"&&\
+echo "$source" copied successfully||echo copying of "$source" failled
+read -p "press enter to continue" lees
+
+

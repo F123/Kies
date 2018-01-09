@@ -1,0 +1,147 @@
+.TH PICKAFILE 1
+
+.SH NAME
+pickafile \-  a text-only, speech-friendly file browser used by kies
+.SH SYNOPSIS
+pickafile [-r<restrict string>] [-m] [-b] [<command>]
+
+.SH DESCRIPTION
+The Pickafile file browser
+Most file browsers able to run commands with the selected file as parameter
+require that one start at the file level and then run a command depending on
+the mime type.
+The lynx web browser has a file browser mode which works like that.  The
+console based ones I have looked at also either give too much information
+or to little when used with speech.
+Pickafile can be run in two ways.  Pickafile command which allow for the
+picking of a file and then runs command with that file as the first
+parameter, or:
+just pickafile without any parameters which puts the selected file/directory
+and its path into $HOME/.kies/.ttyxfile
+where ttyx is the output of the getterm script.
+This is for handling more 
+than one pickafile instance running in different terminals as the same user.
+The purpose of pickafile is to allow the user to brows the directory
+structure and select a file to be processed.
+On entering the program, the user hears the first file in the current
+directory.  the following keys are available:
+Enter to select the file and run the command if one was specified on the
+command line.
+Up and down arrows to move through the files in the current directory.
+Slash to prompt for a search string.
+After the string has been entered, the first matching file name is heard.
+n for next match goes to the next match in the directory if it exists.
+N for previous match goes to the previous match in the directory if it exists.
+If the current entry is a directory and enter is pressed, the user is
+informed that it is a directory and the program speaks the first entry in
+that sub-directory.
+The left arrow goes up one level in the directory structure.
+The right arrow runs the command specified on the command line just like
+enter.
+The difference is that it will give the directory name to the running
+program and would not first descend into the sub-directory.
+c Prompts for a name and provide that name to the command specified on the
+command line.
+This is used to provide a name to command-line programs that need a
+non-existing file name as parameter.
+
+Capital C prompts for the name of a directory and creates the directory.
+
+i The i key provide more information on the currently selected file using
+the file command.
+
+m selects the currently displayed entry in the file list to be moved or
+renamed.
+When it is pressed for the first time, you will be informed that the entry
+has been selected to be moved.
+When m is pressed for a second time, you will be prompted with the name of
+the selected file or directory name.
+If you have navigated to a different directory since the first press of m,
+the new current directory will form part of the prompt in place of the
+origional name.
+This prompt can be edited, either to a new name, or can be left as is if you
+simply want to move the file from one place to another in the directory
+structure.
+once you have entered on this prompt, you will be asked to confirm that you
+still want to perform the move.
+Just press enter to continue with the move, or change the y to an n if you
+want to cancel the move.
+
+w where am I gives the current directory.
+
+home Returns to the user's home directory.
+
+q quits the program without doing anything.  It returns a none-zero return
+code so that other programs can check if pickafile exited due to q being
+pressed.
+.SH OPTIONS
+Pickafile accept the following options on the command line:
+-r<restrict string> When this option is given, only files containing
+<restrict string> is shown to the user.
+All sub-directories are always shown.
+If <restrict string> is quoted it can be a multi-line string.
+In that case, pickafile will show files containing any of the strings on
+each line of <restrict string>.
+e.g. -r'.txt
+.py'
+will show files containing the characters '.txt' or files containing the
+characters '.py'.
+
+-m
+When -m is given on the command line, -r must also be given.
+-m tells pickafile to search for <restrict string> in the mime type of the
+file rather than in its name.
+
+-b
+Read bookmark.
+When pickafile exits as a result of a command being executed, a bookmark
+containing the currently selected file is always written.
+When the -b option is used when pickafile is called, it will position the
+user on that file if it still exists, or as close as possible if the
+directory still exists.
+If the directory pointed to by the bookmark no longer is available, the user
+is positioned in his/her home directory.
+The bookmark file is written in the user's .kies directory and is different
+for each console/terminal.
+
+
+
+.SH RESOURCES
+Pickafile requires the scripts catchkey in the ../menu_system directory and
+the getterm script in this directory to be in the execution path.
+It also requires various standard UNIX utilities, normally available under
+any UNIX installation.
+It requires the $home/.kies directory to exist where it writes when needed.
+.SH DIAGNOSTICS
+Pickafile normally returns 0 but non-zero when q for quit is pressed.
+.SH SEE ALSO
+file (1)
+kies (1)
+
+.SH COPYRIGHT 
+Pickafile is Copyright (C) copyright Meraka Institute, 
+ Meraka, CSIR, P.O. Box 395, Pretoria, 0001, South Africa 
+EMAIL: Willem van der Walt wvdwalt@csir.co.za
+Web: http://www.meraka.org.za
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+MA 02111-1307 USA.
+
+.SH BUGS
+Pickafile currently cannot select more than one file at a time.  It is not
+currently possible to select three files and provide that to a command in
+one go.
+.SH AUTHOR
+Willem van der Walt
+E-mail wvdwalt@csir.co.za

@@ -1,0 +1,32 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+filename=`date +%Y-%m-%d-%H-%M-%S`.wav
+ext=`echo "$1"|rev|cut -c1-4|rev`
+test "$ext" = ".m3u"&&pl=' -playlist '||pl=""
+mplayer -really-quiet -ao pcm:file=$filename $pl "$1" < /dev/null 2> /dev/null&
+let recpid=$!
+echo "please wait"
+sleep 2
+start=`date +%s`
+let now=$start
+there='n'
+while test "$there" = 'n';do
+	test -e "$filename"&&there='y'
+	now=`date +%s`
+	let wait=$now-$start
+	test $wait -ge 60&&echo "there seem to be a problem, aboarting."&&exit 1
+done	
+meg=`ls -sh $filename|cut -f1 -d' '|rev|cut -c1`
+start=`date +%s`
+let now=$start
+while test "$meg" != 'M';do
+	meg=`ls -sh $filename|cut -f1 -d' '|rev|cut -c1`
+	now=`date +%s`
+	let wait=$now-$start
+	test $wait -ge 60&&echo "no data after $wait seconds, giving up"&&exit 1
+done
+
+echo "Press q to finish"	
+mplayer -really-quiet "$filename" 2> /dev/null
+kill $recpid
+read -p"Your recording of $1 is in $filename, press enter to continue" wag

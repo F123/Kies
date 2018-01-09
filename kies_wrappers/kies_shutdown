@@ -1,0 +1,16 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for ssh
+if (test $ok -eq 1)
+  then echo -e "$0 requires the \n ssh program which is not installed. \n"
+    read -t8 -p"Press enter to exit" wag
+exit 1
+fi
+
+ssh root@localhost "halt -p"

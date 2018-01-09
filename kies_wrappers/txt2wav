@@ -1,0 +1,66 @@
+#!/usr/bin/python
+import sys
+voicepath='/usr/share/speect_voices/'
+default_voice='holmes_full'
+if len(sys.argv) == 1:
+  print 'Usage: '+sys.argv[0]+' [<voicename>] <textfile>'
+  exit
+  
+sys.path.append("/home/wvdwalt/speech/speect_build/swig/python")
+import speect, speect.audio, speect.audio_riff, wave
+stem=default_voice
+if len(sys.argv) == 3:
+  filename=sys.argv[2]
+  stem=sys.argv[1]
+if len(sys.argv) == 2:
+  filename=sys.argv[1]
+bytes_written=0
+v=speect.SVoice(voicepath+stem+"/voice_hts.py")
+v.features['rate']=1.0
+v.features['half-tone']=0.0
+v.features['volume']=0.5
+progress=0.00
+file_count=1
+f=open(filename)
+o=wave.open(filename+'_'+str(file_count)+'.wav', 'wb')
+o.setnchannels(1)
+#o.setsampwidth(2)
+o.setframerate(16000)
+o.setparams((1, 2, 16000, 40480, 'NONE', 'not compressed'))
+lines=f.readlines()
+totlines=len(lines)
+currentline=1.0
+res=1
+
+for line in lines:
+  if len(line)==0 or line.isspace():
+    continue
+  u=v.synth(line)
+  a=u.features['audio']
+  w=a.get_audio_waveform()
+  b=w['samples']
+  bytes_written=bytes_written+len(b)
+  if bytes_written < 4000000000:
+    o.writeframes(b)
+  else:
+    o.close()
+    file_count=file_count+1
+    o=wave.open(filename+'_'+str(file_count)+'.wav', 'wb')
+    o.setnchannels(1)
+    #o.setsampwidth(2)
+    o.setframerate(16000)
+    o.setparams((1, 2, 16000, 40480, 'NONE', 'not compressed'))
+    o.writeframes(b)
+    bytes_written=len(b)
+  progress=(currentline/totlines)*100
+  currentline=currentline+1
+  oures=res
+  res=int(progress)%10
+  if oures != 0 and res==0:
+    print int(progress)," percent"
+  
+f.close()
+o.close()
+print str(file_count)+" output files written"
+
+

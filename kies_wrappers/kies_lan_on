@@ -1,0 +1,4 @@
+#!/bin/bash
+ifup eth0&&\
+route del default ra0 2> /dev/null
+

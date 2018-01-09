@@ -1,0 +1,27 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for tnef
+if (test $ok -eq 1)
+ then echo $0 "requires tnef which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for pickafile
+if (test $ok -eq 1)
+ then echo $0 "requires pickafile which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+test $# -lt 1&&echo "you must give me a Microsoft Transport Neutral Encapsulation Format file to convert"&&exit
+test -d extracted_"$1"||mkdir extracted_"$1"
+echo "Extracting $1 to extracted_$1"
+echo "$1 contains `tnef -t $1|cut -f1 -d'|'`"
+tnef -Cextracted_"$1" --overwrite --number-backups --save-body --body-pref 'thr' "$1"
+ 

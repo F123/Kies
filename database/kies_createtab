@@ -1,0 +1,212 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for lynx
+if (test $ok -eq 1)
+ then echo $0 "requires lynx which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for mysqlshow
+if (test $ok -eq 1)
+ then echo $0 "requires mysqlshow which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for mysql
+if (test $ok -eq 1)
+ then echo $0 "requires mysql which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+isthere=0
+while (test $isthere -eq 0);do
+read -p"database name? " table
+db_name=$table
+table=`echo $table|sed s'/ /_/g'`
+mysqlshow -uroot personal $table 2>/dev/null 1>/dev/null||isthere=1
+test $isthere -eq 0&&echo $table exists, pick another name
+done
+
+phpdir=$HOME/.kies/data/
+test -d $phpdir||mkdir -p $phpdir
+mainindex=$phpdir/index.html
+thisindex=$phpdir/$table.html
+
+test -f $mainindex||echo '<html><head><h1>list of databases</h1></head><body>' > $mainindex
+echo '<html><h1>'$db_name'</h1><br><body>' > $thisindex
+
+phpform=$phpdir"$table".php
+phpadd=$phpdir"$table"_add.php
+phpsearch="$phpdir"$table"_search.php"
+phpchange="$phpdir"$table"_change.php"
+phpchangethis1="$phpdir"$table"_change_this1.php"
+echo "create table $table (" > $phpdir$table.sql
+lyn='<?php'
+echo $lyn > $phpform
+echo $lyn > $phpadd
+echo $lyn > $phpsearch
+echo $lyn > $phpchange
+echo $lyn > $phpchangethis1
+
+echo 'if (!$_GET['"'task']) { echo '"'no task supplied: call with http://server/'$phpform'?task="add" | "search" | "change"<br>'"';" >> $phpform 
+echo ' die;}' >> $phpform
+
+lyn="include('config.php');"
+echo $lyn >> $phpform
+echo $lyn >> $phpadd
+echo $lyn >> $phpsearch
+echo $lyn >> $phpchange
+echo $lyn >> $phpchangethis1
+
+lyn=' $db=NewADOConnection($c_database);'
+echo $lyn >> $phpform
+echo $lyn >> $phpadd
+echo $lyn >> $phpsearch
+echo $lyn >> $phpchange
+echo $lyn >> $phpchangethis1
+lyn=' $db->Connect($c_server, $c_db_user, $c_db_password, $c_db_connect_string);'
+echo $lyn >> $phpform
+echo $lyn >> $phpadd
+echo $lyn >> $phpsearch
+echo $lyn >> $phpchange
+echo $lyn >> $phpchangethis1
+
+echo "echo '<form method="'"post"
+action="'"$table""_'."'$_GET['"'task'].'"'.php">'"';" >> $phpform
+echo '$error_flag=1;' >> $phpadd
+
+read -p "first heading? " h
+
+f=`echo $h|sed s'/ /_/'g`
+echo "id integer, $f varchar(255)" >> $phpdir$table.sql
+echo 'echo '"'"'"<input type="hidden" name="id" value="'"'.\$res->fields['"id"'].'"'"></input><br>'"';" >> $phpform
+echo "echo '"''$h'<input type="text" size="50" name="'$f'" value="'"'.\$res->fields['"$f"'].'"'"></input><br>'"';" >> $phpform
+addthis='"insert into '$table' values ('
+
+addthis=$addthis'".$_POST['"'id']".'"'
+addthis=$addthis', ".$db->qstr($_POST['"'$f'],get_magic_quotes_gpc"'()).'
+echo 'if (strlen($_POST['"'"$f"'"']) > 0) { $error_flag=0;}' >> $phpadd
+
+echo '$select_command="select * from '$table' ";' >> $phpsearch
+echo '$select_where=" where ";' >> $phpsearch
+echo 'if ($_POST['"'$f'"']) {' >> $phpsearch
+echo '$select_where=$select_where."'$f' like
+".$db->qstr('"'%'."'$_POST['"'$f'].'%'"',get_magic_quotes_gpc())." and "; }' >> $phpsearch
+echo '$res = $db->execute("select * from '$table'
+where id = ".$_GET['"'id'"']."");' >> $phpchangethis1
+
+echo 'if ($res === false) { print ($db->ErrorMsg());
+die; }' >> $phpchangethis1
+echo 'if ($res->recordcount() == 1) {
+$_GET['"'task'"'] = "change"; include('"'$table.php'"'); }' >> $phpchangethis1
+echo '?>' >> $phpchangethis1
+echo '$error_flag=1;' >> $phpchange
+
+echo '$update_command = '"'update $table
+ set '"';' >> $phpchange
+echo 'if (strlen($_POST['"'"$f"'"']) > 0) { $error_flag=0;
+$update_command=$update_command.'"'"$f' =
+'"'"'.$db->qstr($_POST['"'$f'],get_magic_quotes_gpc"'()).'"', '"';
+}
+else { 
+$update_command=$update_command.'"'$f = null, '"';
+}' >> $phpchange
+
+
+
+
+
+while (test "$h" != "");
+do
+read -p "next heading? press enter when done " h
+f=`echo $h|sed s'/ /_/'g`
+
+if (test -n "$f")
+  then echo ", $f varchar(255)" >> $phpdir$table.sql
+echo "echo '"$h'<input type="text" size="50" name="'$f'" value="'"'.\$res->fields['"$f"'].'"'"></input><br>'"';" >> $phpform
+ echo 'if (strlen($_POST['"'"$f"'"']) > 0) { $error_flag=0;}' >> $phpadd
+ addthis=$addthis"', "
+addthis=$addthis"'."'$db->qstr($_POST['"'$f'],get_magic_quotes_gpc"'()).'
+  echo 'if ($_POST['"'$f'"']) {' >> $phpsearch
+echo '$select_where=$select_where."'$f' like
+".$db->qstr('"'%'."'$_POST['"'$f'].'%'"',get_magic_quotes_gpc())." and "; }' >> $phpsearch
+echo 'if (strlen($_POST['"'"$f"'"']) > 0) { $error_flag=0;
+$update_command=$update_command.'"'"$f' =
+'"'"'.$db->qstr($_POST['"'$f'],get_magic_quotes_gpc"'()).'"'"', '"'"';
+}
+else
+{ $update_command=$update_command.'"'$f = null, '"';
+}' >> $phpchange
+
+
+else echo ");" >> $phpdir$table.sql
+  echo "echo '<input type="'"submit" name="submit" value="'"'.\$_GET['task'].'"'">'"';" >> $phpform
+  addthis=$addthis'")'
+echo '$update_command=substr($update_command,0,strlen($update_command)-2)."
+where id = ".$_POST['"'id']"';' >> $phpchange
+
+fi
+done
+echo "echo '</form>';" >> $phpform
+echo '?>' >> $phpform
+echo 'if ($error_flag == 1) { ' >> $phpadd
+echo 'if ($error_flag == 1) { ' >> $phpchange
+echo 'echo "At least one heading must contain data, cannot add an empty record.";' >> $phpadd
+echo 'echo "use the back button of your browser to go back.";' >> $phpadd
+echo 'echo "At least one heading must contain data, cannot change to an empty record.";' >> $phpchange
+echo 'echo "use the back button of your browser to go back.";' >> $phpchange
+echo 'die; }' >> $phpadd
+echo 'die; }' >> $phpchange
+
+echo '$_POST['"'id'"'] = $db->genid($seq_name = '"'$table"_seq"'"', $startid=1);' >> $phpadd
+
+echo 'if ($db->Execute('$addthis'") === false) {' >> $phpadd
+
+echo 'print ($db->ErrorMsg()); die; }' >> $phpadd
+echo 'echo "'$table' successfully added";' >> $phpadd
+echo "echo '<br><a href="'"'$table".php?task=add"'"'">add another</a>';" >> $phpadd
+echo "echo '<br><a href="'"'$table".html"'"'">back to $db_name </a>';" >> $phpadd
+echo '?>' >> $phpadd
+echo '$select_command=$select_command.substr($select_where,1,strlen($select_where)-6);' >> $phpsearch
+echo '$rekords = $db->Execute($select_command);' >> $phpsearch
+echo 'if ($rekords === false) { print ($db->ErrorMsg());
+die; }' >> $phpsearch
+echo 'echo $rekords->recordcount()." records found<br> ";' >> $phpsearch
+echo 'while (!$rekords->EOF) {' >> $phpsearch
+echo "echo '<a
+href="'"'$table'_change_this1.php?id='"'."'$rekords->fields['"'id'"'].'"'"'">'"'"'.$rekords->fields[1]."
+".$rekords->fields[2]." ".$rekords->fields[3]."</a><br>";' >> $phpsearch
+echo '$rekords->movenext();' >> $phpsearch
+echo '}' >> $phpsearch
+echo '?>' >> $phpsearch
+
+echo 'if ($db->Execute($update_command) === false) {' >> $phpchange
+
+echo 'print ($db->ErrorMsg()); die; }' >> $phpchange
+echo 'echo "'$table' successfully changed";' >> $phpchange
+echo "echo '<br><a href="'"'$table".html"'"'">back</a>';" >> $phpchange
+echo '?>' >> $phpchange
+
+read -n1 -p "create $table y/n? " wag
+if (test "$wag" = "y")
+then 
+mysql -uroot personal < $phpdir$table.sql&&echo $table created||echo could not create $table
+  echo '<a href="'$table'.html">'$db_name'</a><br>' >> $mainindex
+
+echo '<a href="'$table'.php?task=add">add to '$db_name'</a><br>' >> $thisindex
+echo '<a href="'$table'.php?task=search">search or change '$db_name'</a><br>' >> $thisindex
+echo '<a href="index.html">back to database list</a><br>' >> $thisindex
+echo '<body><html>' >> $thisindex
+
+else echo creation of $table canceled
+fi
+

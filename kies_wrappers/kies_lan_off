@@ -1,0 +1,3 @@
+#!/bin/bash
+ifdown eth0&&\
+route del default eth0 2> /dev/null

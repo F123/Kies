@@ -1,0 +1,7 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+test $# -lt 1&&echo "must give a file to move to trash"&&exit
+test -d "$HOME/.kies/.trash"||mkdir -p "$HOME/.kies/.trash"
+mv "$1" $HOME/.kies/.trash/.&&\
+echo "$1 moved to trash"||echo "problem deleting $1"
+

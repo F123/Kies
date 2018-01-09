@@ -1,0 +1,38 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for eject
+if (test $ok -eq 1)
+ then echo $0 "requires eject which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+test $# -lt 1&&player=idair||player=$1
+check_for $player
+if (test $ok -eq 1)
+ then echo $0 "requires $player which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for pickafile
+if (test $ok -eq 1)
+ then echo $0 "requires pickafile which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+eject /dev/cdrom
+read -p'place the CD containing the daisy book(s) in the open tray and press enter' wag
+eject -t /dev/cdrom
+mount /media/cdrom&&\
+cd /media/cdrom&&\
+pickafile $player
+cd
+umount /media/cdrom
+eject /dev/cdrom
+

@@ -1,0 +1,67 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+
+runme='enter'
+down='down'
+up='up'
+quit='q'
+if (test $# -lt 1)
+then echo "Usage: kies <file_name>"
+     echo "where file name is the name of the menu you want to call up."
+    echo "If you do not yet have a menu to call, use newmenu without arguments"
+       echo " to create an empty menu in $HOME/.kies/main.txt"
+      exit 
+fi
+
+test -d $HOME/.kies||mkdir $HOME/.kies
+
+l=`wc -l $HOME/.kies/"$1".txt|cut -f1 -d' '`
+echo "you have $l choices.  up/down arrows to select, enter to run, q to quit"
+let i=1
+oldpressed=""
+
+while (test $i -le $l);do
+
+lyn=`sed -n "$i"p $HOME/.kies/"$1".txt`
+desc=`echo $lyn|cut -f1 -d','`
+command=`echo $lyn|cut -f2 -d','`
+echo -n $desc
+
+wag=`catchkey`
+ 
+if (test "$wag" = "$runme")
+then echo running $command
+`echo $command`
+
+fi
+
+pressed=$wag
+if (test "$pressed" != "$oldpressed")
+then oldpressed=$pressed
+let hit=-1
+unset hk
+hk=(`cut -c1 $HOME/.kies/"$1".txt|fgrep -n "$pressed"|cut -f1 -d':'`)
+let hkmax=0
+while (test -n "${hk[$hkmax]}");do
+ let hkmax=$hkmax+1
+ done
+ let hkmax=$hkmax-1
+ 
+fi
+test $hit -lt $hkmax&&let hit=$hit+1||let hit=0
+
+if (test -n "${hk[$hit]}" -a "$wag" != "$runme")
+ then let i=${hk[$hit]}
+ 
+ fi
+
+
+test "$wag" = "$up"&&let i=i-1
+test $i -lt 1&&let i=$l
+
+test "$wag" = "$down"&&let i=$i+1
+
+clear
+test $i -gt $l&&let i=1
+test "$wag" = "$quit"&&let i=$l+2
+done

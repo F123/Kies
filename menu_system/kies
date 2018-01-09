@@ -1,0 +1,113 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+
+runme='enter'
+down='down'
+up='up'
+quit='q'
+if (test $# -lt 1)
+then echo "Usage: kies <file_name>"
+     echo "where file name is the name of the menu you want to call up."
+    echo "If you do not yet have a menu to call, use newmenu without arguments"
+       echo " to create an empty menu in $HOME/.kies/main.txt"
+      exit 
+fi
+
+test -d $HOME/.kies||mkdir $HOME/.kies
+
+l=`wc -l $HOME/.kies/"$1".txt|cut -f1 -d' '`
+do_hot_command() 
+{
+test -e $HOME/.kies/hot_commands.txt ||touch $HOME/.kies/hot_commands.txt
+hotcommands=`wc -l $HOME/.kies/"hot_commands.txt"|cut -f1 -d' '`
+let hotline=`echo $wag|cut -c2-`
+test $hotline -gt $hotcommands&&echo "$wag not assigned"&&return
+`sed -n "$hotline"p $HOME/.kies/hot_commands.txt|cut -f2- -d','`
+}
+
+say_hot_command() 
+{
+test -e $HOME/.kies/hot_commands.txt ||touch $HOME/.kies/hot_commands.txt
+hotcommands=`wc -l $HOME/.kies/"hot_commands.txt"|cut -f1 -d' '`
+let hotline=`echo $wag|cut -c8-`
+test $hotline -gt $hotcommands&&echo "$wag not assigned"&&return
+sed -n "$hotline"p $HOME/.kies/hot_commands.txt|cut -f1 -d','
+}
+
+echo "you have $l choices.  up/down arrows to select, enter to run, q to quit"
+let i=1
+oldpressed=""
+
+while (test $i -le $l);do
+
+lyn=`sed -n "$i"p $HOME/.kies/"$1".txt`
+desc=`echo $lyn|cut -f1 -d','`
+command=`echo $lyn|cut -f2- -d','`
+echo -n $desc
+
+wag=`catchkey`
+if (test "$wag" = "f1" -o \
+"$wag" = "f2" -o \
+"$wag" = "f3" -o \
+"$wag" = "f4" -o \
+"$wag" = "f5" -o \
+"$wag" = "f6" -o \
+"$wag" = "f7" -o \
+"$wag" = "f8" -o \
+"$wag" = "f9" -o \
+"$wag" = "f10" -o \
+"$wag" = "f11" -o \
+"$wag" = "f12")
+then do_hot_command
+fi
+if (test "$wag" = "shift_f1" -o \
+"$wag" = "shift_f2" -o \
+"$wag" = "shift_f3" -o \
+"$wag" = "shift_f4" -o \
+"$wag" = "shift_f5" -o \
+"$wag" = "shift_f6" -o \
+"$wag" = "shift_f7" -o \
+"$wag" = "shift_f8" -o \
+"$wag" = "shift_f9" -o \
+"$wag" = "shift_f10" -o \
+"$wag" = "shift_f11" -o \
+"$wag" = "shift_f12")
+then say_hot_command
+fi
+
+ 
+if (test "$wag" = "$runme")
+then `echo $command`
+
+fi
+
+pressed=$wag
+if (test "$pressed" != "$oldpressed")
+then oldpressed=$pressed
+let hit=-1
+unset hk
+hk=(`cut -c1 $HOME/.kies/"$1".txt|fgrep -n "$pressed"|cut -f1 -d':'`)
+let hkmax=0
+while (test -n "${hk[$hkmax]}");do
+ let hkmax=$hkmax+1
+ done
+ let hkmax=$hkmax-1
+ 
+fi
+test $hit -lt $hkmax&&let hit=$hit+1||let hit=0
+
+if (test -n "${hk[$hit]}" -a "$wag" != "$runme")
+ then let i=${hk[$hit]}
+ 
+ fi
+
+
+test "$wag" = "$up"&&let i=i-1
+test $i -lt 1&&let i=$l
+
+test "$wag" = "$down"&&let i=$i+1
+
+clear
+test $i -gt $l&&let i=1
+test "$wag" = "$quit"&&let i=$l+2
+done

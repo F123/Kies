@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "trying to bring down the wifi interface"
+ifdown ra0&&\
+route del default ra0 2> /dev/null

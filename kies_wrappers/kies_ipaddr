@@ -1,0 +1,6 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+#show the ip address of the default gateway interface
+
+dgi=`/sbin/route|fgrep default|rev|cut -f1 -d' '|rev`
+/sbin/ifconfig "$dgi"|fgrep inet|head -1|cut -f2 -d:|cut -f1 -d' '

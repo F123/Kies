@@ -1,0 +1,9 @@
+#!/bin/bash
+#convert input image file to .pnm
+pnmfile=`echo $1|cut -f1 -d'.'`
+pnmfile=`echo $pnmfile.pnm`
+convert "$1" "$pnmfile"
+ocrad -o $1.txt -f "$pnmfile"
+echo '<html><body>' > $1.html
+cat $1.txt >> $1.html
+echo '</body></html>' >> $1.html

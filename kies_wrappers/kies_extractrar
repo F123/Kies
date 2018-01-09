@@ -1,0 +1,2 @@
+#!/bin/bash
+pickafile -b -r'rar' 'unrar x '

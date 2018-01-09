@@ -1,0 +1,181 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+test $# -lt 1&&echo "usage: $0 <interface> where <interface> is your wireless interface"&&exit
+test -d $HOME/.kies||mkdir $HOME/.kies
+/sbin/ifconfig "$1" up
+echo "Scanning for wireless networks, please wait."
+sleep 5
+/sbin/iwlist "$1" scanning|tr '\n' '|'|sed -e s'/|          Cell/\nCell/'g >"$HOME"/.kies/kies_found_wifi
+kies_wifisplit|sort|uniq|sed '/^$/'d  > $HOME/.kies/kies_wifi_list
+function unconfigure_wifi {
+	grep ssid /etc/wpa_supplicant/wpa_supplicant.conf|cut -f2 -d'"' > "$HOME"/.kies/kies_configured_wifi
+	c_wifi=`wc -l $HOME/.kies/kies_configured_wifi|cut -f1 -d' '`
+	test $c_wifi -eq 0&&echo "no configured wifi networks yet"&&return
+	
+echo "you have $c_wifi configured wifi networks.  up/down arrows to select, enter to unconfigure, q to quit"
+let j=1
+oldpressed=""
+
+while (test $j -le $c_wifi);do
+
+essid=`sed -n "$j"p $HOME/.kies/kies_configured_wifi`
+echo -n $essid
+lyn=`grep -i -n 'ssid="'"$essid"'"' /etc/wpa_supplicant/wpa_supplicant.conf|cut -f1 -d:`
+let lyn=$lyn-1
+
+wag=`catchkey`
+ 
+if (test "$wag" = "$runme")
+then sed -i $lyn,/}/d /etc/wpa_supplicant/wpa_supplicant.conf&&echo "$essid has been unconfigured"
+wag=$quit
+fi
+
+pressed=$wag
+if (test "$pressed" != "$oldpressed")
+then oldpressed=$pressed
+let hit=-1
+unset hk
+hk=(`cut -c1 $HOME/.kies/kies_configured_wifi|fgrep -n "$pressed"|cut -f1 -d':'`)
+let hkmax=0
+while (test -n "${hk[$hkmax]}");do
+ let hkmax=$hkmax+1
+ done
+ let hkmax=$hkmax-1
+ 
+fi
+test $hit -lt $hkmax&&let hit=$hit+1||let hit=0
+
+if (test -n "${hk[$hit]}" -a "$wag" != "$runme")
+ then let j=${hk[$hit]}
+ 
+ fi
+
+
+test "$wag" = "$up"&&let j=$j-1
+test $j -lt 1&&let j=$c_wifi
+
+test "$wag" = "$down"&&let j=$j+1
+
+clear
+test $j -gt $c_wifi&&let j=1
+test "$wag" = "$quit"&&let j=$c_wifi+2
+done
+wag="u"
+}	
+
+function configure_wifi {
+ conf="$HOME"/.kies/"$essid".conf
+ wagwoord='password'
+ echo 'network={' > "$conf"
+ echo 'ssid="'$essid'"' >> "$conf"
+ echo "priority=0" >> "$conf"
+ if test "$proto" != " "
+  then echo 'proto='$proto >> "$conf"
+ fi
+ if test "$auth" = '802.1x'
+  then read -p "enter user name for $essid? " wifi_user
+  echo 'key_mgmt=WPA-EAP' >> "$conf"
+  echo 'eap=TTLS' >> "$conf"
+  echo 'identity="'$wifi_user'"' >> "$conf"
+  echo 'phase2="auth=PAP"' >> "$conf"
+  wagwoord='password'
+ fi
+ if test "$auth" = "PSK"
+  then echo 'key_mgmt=WPA-PSK' >> "$conf"
+  wagwoord='psk'
+ fi
+ if test "$proto" = "WPA"
+  then echo 'pairwise=TKIP' >> "$conf"
+  echo 'group=TKIP' >> "$conf"
+ fi
+ if test "$proto" = "WEP" -o "$proto" = " "
+  then echo 'key_mgmt=NONE' >> "$conf"
+  wagwoord='wep_key0'
+ fi
+ if test "$encryption" = "on"
+  then read -p "enter the password for $essid? " geheim
+  echo $wagwoord='"'$geheim'"' >> "$conf"
+ else echo 'key_mgmt=NONE' >> "$conf"
+ fi
+ echo '}' >> "$conf"
+ cat "$conf" >> /etc/wpa_supplicant/wpa_supplicant.conf
+ }
+  
+runme='enter'
+down='down'
+up='up'
+quit='q'
+prefered="p"
+unconf='u'
+
+test -d $HOME/.kies||mkdir $HOME/.kies
+
+l=`wc -l $HOME/.kies/kies_wifi_list|cut -f1 -d' '`
+echo "you have $l choices.  up/down arrows to select, enter to set up, p to set prefered, u to unconfigure, q to quit"
+let i=1
+oldpressed=""
+
+while (test $i -le $l);do
+
+lyn=`sed -n "$i"p $HOME/.kies/kies_wifi_list`
+essid=`echo $lyn|cut -f1 -d'|'`
+encryption=`echo $lyn|cut -f2 -d'|'`
+proto=`echo $lyn|cut -f3 -d'|'`
+auth=`echo $lyn|cut -f4 -d'|'`
+echo -n "$essid"
+configured=`grep -i -n 'ssid="'"$essid"'"' /etc/wpa_supplicant/wpa_supplicant.conf|cut -f1 -d:`
+test "$configured" > "0"&&echo -n " configured"||let configured=0
+test $configured -eq 0&&let pref=0||let pref=$configured+1
+sed -n "$pref"p /etc/wpa_supplicant/wpa_supplicant.conf|grep 'priority=1' 2>&1 > /dev/null&& echo -n " as prefered wifi network"
+
+
+wag=`catchkey`
+if (test "$wag" = "$unconf")
+	then unconfigure_wifi
+fi 
+if (test "$wag" = "$prefered")
+	then if (test $configured -gt 0)
+		then	sed -i s'/priority=1/priority=0/'g /etc/wpa_supplicant/wpa_supplicant.conf
+		let pref=$configured+1
+		sed -i "$pref"s'/priority=0/priority=1/'g /etc/wpa_supplicant/wpa_supplicant.conf
+	else echo "$essid is not yet configured, cannot make prefered network."
+	fi
+fi
+
+if (test "$wag" = "$runme")
+then grep "$essid" /etc/wpa_supplicant/wpa_supplicant.conf 2>&1 > /dev/null&&echo "We already know about $essid"||configure_wifi
+
+fi
+
+pressed=$wag
+if (test "$pressed" != "$oldpressed")
+then oldpressed=$pressed
+let hit=-1
+unset hk
+hk=(`cut -c1 $HOME/.kies/kies_wifi_list|fgrep -n "$pressed"|cut -f1 -d':'`)
+let hkmax=0
+while (test -n "${hk[$hkmax]}");do
+ let hkmax=$hkmax+1
+ done
+ let hkmax=$hkmax-1
+ 
+fi
+test $hit -lt $hkmax&&let hit=$hit+1||let hit=0
+
+if (test -n "${hk[$hit]}" -a "$wag" != "$runme")
+ then let i=${hk[$hit]}
+ 
+ fi
+
+
+test "$wag" = "$up"&&let i=i-1
+test $i -lt 1&&let i=$l
+
+test "$wag" = "$down"&&let i=$i+1
+
+clear
+test $i -gt $l&&let i=1
+test "$wag" = "$quit"&&let i=$l+2
+done
+
+

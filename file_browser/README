@@ -1,0 +1,58 @@
+
+The Pickafile file browser
+Most file browsers able to run commands with the selected file as parameter
+require that one start at the file level and then run a command depending on
+the mime type.
+The lynx web browser has a file browser mode which works like that.  The
+console based ones I have looked at also either give too much information
+or to little when used with speech.
+Pickafile can be run in two ways.  Pickafile command which allow for the
+picking of a file and then runs command with that file as the first
+parameter, or:
+just pickafile without any parameters which puts the selected file/directory
+and its path into $HOME/.kies/.<tty>file where <tty> is the output of
+getterm E.G. $HOME/.kies/.tty1file or $HOME/.kies/.pts0file..
+
+The purpose of pickafile is to allow the user to brows the directory
+structure and select a file to be processed.
+On entering the program, the user hears the first file in the current
+directory.  the following options are available:
+Enter to select the file and run the command if one was specified on the
+command line.
+Up and down arrows to move through the files in the current directory.
+Slash to prompt for a search string.
+After the string has been entered, the first matching file name is heard.
+n for next match goes to the next match in the directory if it exists.
+When n is pressed on the last match in the directory, the search raps back
+to the first match in the directory.
+
+If the current entry is a directory and enter is pressed, the user is
+informed that it is a directory and the program speaks the first entry in
+that sub-directory.
+The left arrow goes up one level in the directory structure.
+The right arrow runs the command specified on the command line just like
+enter.
+The difference is that it will give the directory name to the running
+program and would not first descend into the sub-directory.
+c Prompts for a name and provide that name to the command specified on the
+command line.
+This is used to provide a name to command-line programs that need a
+non-existing file name as parameter.
+
+i The i key provide more information on the currently selected file using
+the file command.
+
+q quits the program without doing anything.  It returns a none-zero return
+code so that other programs can check if pickafile exited due to q being
+pressed.
+
+
+Pickafile requires the scripts catchkey in the ../menu_system directory and
+the getterm script in this directory to be in the execution path.
+It also requires various standard UNIX utilities, normally available under
+any UNIX installation.
+
+Bugs:
+Pickafile currently cannot select more than one file at a time.  It is not
+currently possible to select three files and provide that to a command in
+one go.

@@ -1,0 +1,42 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for montage
+if (test $ok -eq 1)
+ then echo $0 "requires montage from the ImageMagic package which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+check_for cuneiform
+if (test $ok -eq 1)
+ then echo $0 "requires cuneiform which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+
+check_for lynx
+if (test $ok -eq 1)
+ then echo $0 "requires lynx which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+let engine_number=2
+echo "parms is $# dollar 1 is $1 and dollar 2 is $2"
+if test $# -eq 2
+   then test $1 -gt 0 -a $1 -lt 100&&let engine_number=$1||let engine_number=2
+   fi
+echo "using engine " $engine_number   
+rm -f $HOME/tmp*.png
+montage -adjoin -mode concatenate "$2" $HOME/tmp.png&&\
+convert "$HOME"/tmp.png -monochrome "$HOME"/tmpm.png&&\
+rm "$HOME"/tmp.png&&\
+mv "$HOME"/tmpm.png $HOME/tmp.png&&\
+kies_ocr "$HOME/tmp.png" $engine_number 
+lynx $HOME/tmp.png.html

@@ -1,0 +1,5 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+
+s=`du -sh $HOME/.kies/.trash|cut -f1` 
+echo "your trash is using $s"

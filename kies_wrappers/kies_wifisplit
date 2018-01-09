@@ -1,0 +1,34 @@
+#!/usr/bin/python
+import os
+pad=os.path.expanduser("~")
+f=open(pad+"/.kies/kies_found_wifi")
+lyne=f.readlines()
+f.close()
+i=1
+#start looking at lines from line 2.
+essid=[' ']*len(lyne)
+encryption=[' ']*len(lyne)
+proto=[' ']*len(lyne)
+auth=[' ']*len(lyne)
+while i < len(lyne):
+  kol=lyne[i].split('|')
+  j=0
+  while j < len(kol):
+    if 'ESSID' in kol[j]:
+      essid[i]=kol[j]
+    if 'Encryption key' in kol[j]:
+      encryption[i]=kol[j]
+    if 'WPA2' in kol[j]:
+      proto[i]='WPA2'
+    if 'WPA ' in kol[j]:
+      proto[i]='WPA'
+    if 'WEP' in kol[j]:
+      proto[i]='WEP'
+    if 'Authentication Suites' in kol[j]:
+      authmethod=kol[j].split(':')
+      auth[i]=authmethod[1].lstrip()
+    j=j+1
+  print essid[i].lstrip().lstrip('ESSID').lstrip('\:\"').rstrip('\"')+'|'+encryption[i].lstrip().lstrip('Encryption\ key').lstrip('\:')+'|'+proto[i]+'|'+auth[i]
+  i=i+1
+  
+  

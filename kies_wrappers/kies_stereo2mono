@@ -1,0 +1,4 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+sox "$1" -c1 mono_"$1" remix 1-2
+read -p"Created mono_$1 from $1, press enter to continue" wag

@@ -1,0 +1,22 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for lynx
+if (test $ok -eq 1)
+ then echo $0 "requires lynx which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+
+if (test $# -lt 1)
+then read -p "search for? " kry
+soekna=`echo $kry|sed 's/ /+/g'`
+else soekna=$1
+fi
+
+lynx http://www.google.com/search?q=$soekna\&btnG=Google+Search

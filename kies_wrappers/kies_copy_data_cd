@@ -1,0 +1,31 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+  else ok=1
+  fi
+}
+check_for eject
+if (test $ok -eq 1)
+ then echo $0 "requires eject which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+check_for cdrecord
+if (test $ok -eq 1)
+ then echo $0 "requires cdrecord which is not installed"
+     read -t8 -p "press enter to exit" wag
+       exit 1
+fi
+eject /dev/cdrecorder
+read -p "insert the source cd, close the drive and press enter" wag
+echo please wait while we read the cd
+dd if=/dev/cdrecorder of=data.iso bs=2048
+#readcd dev=/dev/cdrecorder -v  -clone f=data.cd
+
+eject /dev/cdrecorder
+read -p"please insert a blank cd, close the drive and press enter" wag
+cdrecord dev=/dev/cdrecorder --data data.iso
+#cdrecord dev=/dev/cdrecorder --dummy -v -raw96r -clone data.cd
+eject /dev/cdrecorder

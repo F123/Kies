@@ -1,0 +1,39 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+    else ok=1
+      fi
+      }
+      check_for units
+      if (test $ok -eq 1)
+       then echo $0 "requires units which is not installed"
+            read -t8 -p "press enter to exit" wag
+                   exit 1
+                   fi
+                   
+                   check_for less
+                   if (test $ok -eq 1)
+                    then echo $0 "requires less which is not installed"
+                         read -t8 -p "press enter to exit" wag
+                                exit 1
+                                fi
+                                
+test $# -lt 2&&echo " usage: $0 <from> <to>"&&exit
+echo "converting from: $1 to: $2"
+read -p "number of $1 to convert into $2?" have
+echo "$1"|fgrep temp 2>&1 >/dev/null
+let t=$?
+if test $t -eq 0
+then from=$1'('$have')'
+else
+from="$have $1"
+fi
+
+to=$2
+
+units "$from" "$to"|head -1>$HOME/units.tmp
+less -P"press q for conversion menu"  $HOME/units.tmp
+
+

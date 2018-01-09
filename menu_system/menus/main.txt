@@ -1,0 +1,43 @@
+audio book player,pickafile -b bookplayer
+text file reader,pickafile -b ipage
+add an item to the main menu,kiesadd main.txt
+master volume louder,amixer -q set Master 10%+
+master volume softer,amixer -q set Master 10%-
+use calculator,calc
+unit conversions,kies units
+personal databases,kies databases
+email,alpine
+use twitter,ttytter
+bash shell type exit to return here,bash
+look up a word in the dictionary,kies_lookup
+look it up in the on line encyclopedia,kies_wiki_search_online
+administration menu,kies administration
+search the Internet,kies_search_google
+extract various archives,kies extract_archives
+audio editing and recording,pickafile -b dae
+write a CD,kies write_a_CD
+convert an audio CD to audio files (rip the CD),kies rip_a_CD
+manage your files,kies files
+do Word processing,kies edit
+use octave as calculator,octave
+convert .pdf to html,pickafile kies_pdfconvert
+audio file conversions,kies audio_conversions
+listen to a DVD,kies_playdvd
+communications menu,kies communications_menu
+get new messages,fetchmail -ppop3
+view a text or html file,pickafile -b lynx
+view an open document format file,pickafile -b kies_view_odt
+view a Microsoft .doc file,pickafile -b kies_view_doc
+view a Microsoft .docx file,pickafile -b kies_view_docx
+play an audio file,pickafile -b -- mplayer
+print a document,pickafile lp
+listen to Internet audio streams,kies streaming
+listen to Internet audio streams while recording,kies stream_recording
+normalize an audio file,pickafile -b ecanormalize
+do optical character recognition,kies_p2t
+play a DAISY book,kies_play_daisy
+read epub document,kies read_epub
+convert various document formats to wave using natural voices,kies document2qfrency
+start the graphical interface: experimental,kies_graphicsmode
+convert various e-book formats to plain text,pickafile -b kies_ebook-convert
+internet browser,lynx
