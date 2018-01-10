@@ -82,6 +82,9 @@ check_for lynx
 find . -type f -not -name "install.sh" -exec sed -i "s:/usr/local/bin:$bindir:g;" {} ";"
 find . -type f -not -name "install.sh" -exec sed -i "s:/usr/local/man:$mandir:g;" {} ";"
 find . -type f -not -name "install.sh" -exec sed -i "s:/usr/local/share:$datadir:g;" {} ";"
+find . -type f -not -name "install.sh" -exec sed -i "s:/opt/kies/bin:$bindir:g;" {} ";"
+find . -type f -not -name "install.sh" -exec sed -i "s:/opt/kies/share/man:$mandir:g;" {} ";"
+find . -type f -not -name "install.sh" -exec sed -i "s:/opt/kies/share:$datadir:g;" {} ";"
 
 echo "installing the menu system"
 
