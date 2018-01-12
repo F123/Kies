@@ -1,5 +1,10 @@
 #!/bin/bash
 #Released under GNU General Public License version 3, see the file COPYING for details.
+# LibreOffice calc wrapper script for use with pickafile
+# kies_lo_calc can run without the menu, but it has to run as the command argument to startx,
+# so pickafile tries to send its file argument to startx instead of sending it to kies_lo_calc.
+# This wrapper fixes this problem.
+
 check_for() {
 if (which "$1" 2> /dev/null > /dev/null)
   then ok=0
@@ -34,7 +39,4 @@ if (which "$1" 2> /dev/null > /dev/null)
                    exit 1
                    fi
                    
-test -z $DISPLAY&&echo Usage: startx $0 $@&&exit
-lwm&
-orca&
-libreoffice --writer $@
+startx $(which kies_lo_calc_wrapper) $1
