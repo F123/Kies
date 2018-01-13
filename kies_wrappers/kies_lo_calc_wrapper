@@ -39,4 +39,6 @@ if (which "$1" 2> /dev/null > /dev/null)
                    exit 1
                    fi
                    
-startx $(which kies_lo_calc_wrapper) $1
+test -f "$1" || touch "$1"
+startx $(which kies_lo_calc) "$1" >& /dev/null
+test -s "$1" || rm -f "$1"
