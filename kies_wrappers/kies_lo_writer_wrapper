@@ -18,9 +18,9 @@ if (which "$1" 2> /dev/null > /dev/null)
                    exit 1
                    fi
                    
-      check_for lwm
+      check_for jwm
       if (test $ok -eq 1)
-       then echo $0 "requires lwm which is not installed"
+       then echo $0 "requires jwm which is not installed"
             read -t8 -p "press enter to exit" wag
                    exit 1
                    fi
