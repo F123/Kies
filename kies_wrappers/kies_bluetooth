@@ -1,0 +1,40 @@
+#!/bin/bash
+#Released under GNU General Public License version 3, see the file COPYING for details.
+check_for() {
+if (which "$1" 2> /dev/null > /dev/null)
+  then ok=0
+    else ok=1
+      fi
+      }
+      check_for startx
+      if (test $ok -eq 1)
+       then echo $0 "requires xinit which is not installed"
+            read -t8 -p "press enter to exit" wag
+                   exit 1
+                   fi
+                   
+      check_for jwm
+      if (test $ok -eq 1)
+       then echo $0 "requires jwm which is not installed"
+            read -t8 -p "press enter to exit" wag
+                   exit 1
+                   fi
+                   
+                   check_for orca
+                   if (test $ok -eq 1)
+                    then echo $0 "requires orca which is not installed"
+                         read -t8 -p "press enter to exit" wag
+                                exit 1
+                                fi
+                                
+      check_for blueberry
+      if (test $ok -eq 1)
+       then echo $0 "requires blueberry which is not installed"
+            read -t8 -p "press enter to exit" wag
+                   exit 1
+                   fi
+                   
+test -z $DISPLAY&&echo Usage: startx $@&&exit
+jwm&
+orca&
+blueberry
