@@ -34,7 +34,4 @@ if (which "$1" 2> /dev/null > /dev/null)
                    exit 1
                    fi
 
-test -z $DISPLAY&&echo Usage: startx $@&&exit
-jwm&
-orca&
-blueberry
+startx /usr/bin/kies_bluetooth >& /dev/null
