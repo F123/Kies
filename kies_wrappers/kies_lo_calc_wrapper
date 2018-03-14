@@ -40,5 +40,7 @@ if (which "$1" 2> /dev/null > /dev/null)
                    fi
                    
 test -f "$1" || touch "$1"
-startx $(which kies_lo_calc) "$1" >& /dev/null
+test -d /usr/share/fenrir && python /usr/share/fenrir/tools/addScreenToIgnoreList.py
+startx $(which kies_lo_calc) "$1"
+test -d /usr/share/fenrir && python /usr/share/fenrir/tools/removeScreenFromIgnoreList.py
 test -s "$1" || rm -f "$1"

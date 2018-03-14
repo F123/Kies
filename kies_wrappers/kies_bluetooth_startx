@@ -34,4 +34,6 @@ if (which "$1" 2> /dev/null > /dev/null)
                    exit 1
                    fi
 
-startx /usr/bin/kies_bluetooth >& /dev/null
+test -d /usr/share/fenrir && python /usr/share/fenrir/tools/addScreenToIgnoreList.py
+startx /usr/bin/kies_bluetooth
+test -d /usr/share/fenrir && python /usr/share/fenrir/tools/removeScreenFromIgnoreList.py
