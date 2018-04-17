@@ -4,7 +4,7 @@
 runme='enter'
 down='down'
 up='up'
-quit='q'
+quit='escape'
 if (test $# -lt 1)
 then echo "Usage: kies <file_name>"
      echo "where file name is the name of the menu you want to call up."
@@ -34,7 +34,7 @@ test $hotline -gt $hotcommands&&echo "$wag not assigned"&&return
 sed -n "$hotline"p $HOME/.kies/hot_commands.txt|cut -f1 -d','
 }
 
-echo "you have $l choices.  up/down arrows to select, enter to run, q to quit"
+echo "you have $l choices.  up/down arrows to select, enter to run, escape to quit"
 let i=1
 oldpressed=""
 
