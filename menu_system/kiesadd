@@ -1,15 +1,16 @@
 #!/bin/bash
 #Released under GNU General Public License version 3, see the file COPYING for details.
+
 #Adds a new item to a menu.
-if (test $# -lt 1)
-then echo "usage : kiesadd <name> where <name> is the file name of a kies
+if [[ $# -lt 1 ]]; then
+echo "usage : kiesadd <name> where <name> is the file name of a kies
 menu"
-exit
+exit 1
 fi
 really='n'
-read -p"do you really want to add a new menu option to $1? y/n " really
-test "$really" = 'y'||exit
+read -p "do you really want to add a new menu option to $1? y/n " really
+[[ "$really" == 'y' ]] || exit 0
 read -p "description? " desc
 read -p "command? " command
 entry="$desc,$command"
-sed -i "1i$entry" $HOME/.kies/$1
+sed -i "1i$entry" "$HOME/.kies/$1"
