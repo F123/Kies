@@ -85,7 +85,7 @@ hit=0
 fi
 
 if [[ -n "${hk[$hit]}" && "$wag" != "$runme" ]]; then
-li=${hk[$hit]}
+i=${hk[$hit]}
  fi
 
 
